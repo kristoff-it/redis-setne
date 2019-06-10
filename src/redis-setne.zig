@@ -1,11 +1,12 @@
 const std = @import("std");
 const redis = @cImport({
+    @cInclude("stdarg.h");
     @cInclude("./lib/redismodule.h");
 });
 
 // SETNE key val
 export fn SETNE(ctx: ?*redis.RedisModuleCtx, argv: [*c]?*redis.RedisModuleString, argc: c_int) c_int {
-    if (argc != 3) return redis.RedisModule_WrongArity.?(ctx);
+    if (argc < 3) return redis.RedisModule_WrongArity.?(ctx);
 
     // Obtain pointer & length of the `val` argument
     var val_len: usize = undefined;
@@ -13,7 +14,7 @@ export fn SETNE(ctx: ?*redis.RedisModuleCtx, argv: [*c]?*redis.RedisModuleString
 
     // Obtain the key from Redis (in a block so that defer happens before the next stage).
     {
-        var key = @ptrCast(*redis.RedisModuleKey, redis.RedisModule_OpenKey.?(ctx, argv[1], redis.REDISMODULE_READ));
+        var key = @ptrCast(?*redis.RedisModuleKey, redis.RedisModule_OpenKey.?(ctx, argv[1], redis.REDISMODULE_READ));
         defer redis.RedisModule_CloseKey.?(key);
 
         // If the key is a string, check its value before proceeding.
@@ -25,8 +26,8 @@ export fn SETNE(ctx: ?*redis.RedisModuleCtx, argv: [*c]?*redis.RedisModuleString
         }   
     }
 
-    // Set the string using the high-level API.
-    var reply = redis.RedisModule_Call.?(ctx, c"SET", c"ss", argv[1], argv[2]);
+    // Set the string using the high-level API. All args get routed to the native SET command.
+    var reply = redis.RedisModule_Call.?(ctx, c"SET", c"v", &(argv[1]), argc - 1);
     return redis.RedisModule_ReplyWithCallReply.?(ctx, reply);
 }
 
