@@ -22,7 +22,7 @@ The first call to `SETNE` will generate a keyspace event, while the second one w
 The command can also be used to create new keys or transform an existing key to a string type, exactly like `SET` does.
 
 ### SETNE supports all of SET's options
-You can also use all the usual `SET` options like `EX`, `PX`, `NX`. All arguments passed to `SETNE` get routed to `SET` if the key must have a real write happen to it (otherwise, nothing happens and none of the options has any effect).
+You can also use all the usual `SET` options like `EX`, `PX`, `NX`, `XX`. All arguments passed to `SETNE` get routed to `SET` if the key must have a real write happen to it (otherwise, nothing happens and none of the options has any effect).
 
 
 ## Obtaining the module
