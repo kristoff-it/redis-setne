@@ -19,7 +19,7 @@ OK
 ```
 
 The first call to `SETNE` will generate a keyspace event, while the second one will **not**.
-The command can also be used to create new key or transform an existing key to a string type, exactly like `SET` does.
+The command can also be used to create new keys or transform an existing key to a string type, exactly like `SET` does.
 
 
 # Obtaining the module
