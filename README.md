@@ -3,7 +3,7 @@ Quick implementation of a SET command that doesn't generate spurious keyspace ev
 
 
 ## Abstract
-Setting a string key to the same value multiple times will produce multiple keyspace events even though the key value in fact never really changed. This command prevents that from happening.
+Setting a string key to the same value multiple times will produce multiple keyspace events even though the key value in fact never really changed. This command prevents that from happening by first checking if the current key value matches the new one. For this reason, this command is slower than SET and should only be used if necessary.
 
 This is the module version of what was proposed in 
 	[this pull-request](https://github.com/antirez/redis/pull/4258).
