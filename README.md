@@ -22,10 +22,11 @@ The first call to `SETNE` will generate a keyspace event, while the second one w
 The command can also be used to create new keys or transform an existing key to a string type, exactly like `SET` does.
 
 
-# Obtaining the module
-You can download this module from the Releases section on GitHub or compile it yourself.
-In Releases I provide macOS and 64bit linux binaries.
+## Obtaining the module
+### Download precompiled binaries from GitHub
+In the releases section I provide x86_64 binaries for macOS and Linux.
 
+### Compile the code
 To compile the code you need to download a copy of [the Zig compiler](https://ziglang.org).
 
 This command will compile a dynamic library for your own architecture:
