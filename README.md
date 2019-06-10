@@ -1,2 +1,82 @@
 # redis-setne
 Quick implementation of a SET command that doesn't generate spurious keyspace events.
+
+
+## Abstract
+Setting a string key to the same value multiple times will produce multiple keyspace events even though the key value in fact never really changed. This command prevents that from happening.
+
+This is the module version of what was proposed in 
+	[this pull-request](https://github.com/antirez/redis/pull/4258).
+
+## Quickstart
+```
+> SET mykey banana
+OK
+> SETNE mykey pear
+OK
+> SETNE mykey pear
+OK
+```
+
+The first call to `SETNE` will not generate a keyspace event, while the second one will.
+The command can also be used to create new key or transform an existing key to a string type, exactly like `SET` does.
+
+
+# Obtaining the module
+You can download this module from the Releases section on GitHub or compile it yourself.
+In Releases I provide macOS and 64bit linux binaries.
+
+To compile the code you need to download a copy of [the Zig compiler](https://ziglang.org).
+
+This command will compile a dynamic library for your own architecture:
+```bash
+$ zig build-lib -dynamic --release-fast -isystem src src/redis-setne.zig
+```
+
+This command will cross-compile for a given target (let's say we are on macOS and want to xcompile for 64bit linux):
+```bash
+$ zig build-lib -dynamic --release-fast -isystem src --library c -target x86_64-linux src/redis-setne.zig
+```
+
+### Compilation notes
+You must link to a libc (`--library c`) also when compiling for your own target if you're on linux.
+
+Currently you need to use the unstable release of Zig as the latest stable release at the moment of writing (0.4.0) is missing some critical QOL changes in the way it handles C headerfiles.
+
+
+## Loading the module
+The recommended way is to either change `redis.conf` or pass the `--loadmodule` option when launching `redis-server`.
+
+A quick way of testing the module without needing to restart Redis is to load it using the `MODULE LOAD` command:
+
+```
+> MODULE LOAD /absolute/path/to/libredis-setne.0.0.0.dylib
+OK
+> SETNE key1 banana
+OK
+```
+Note that dynamic libraries in macOS have the `.dylib` extension while on linux it's `.so`.
+
+
+## License
+MIT License
+
+Copyright (c) 2019 Loris Cro
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
