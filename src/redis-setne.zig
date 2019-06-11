@@ -27,7 +27,7 @@ export fn SETNE(ctx: ?*redis.RedisModuleCtx, argv: [*c]?*redis.RedisModuleString
     }
 
     // Set the string using the high-level API. All args get routed to the native SET command.
-    var reply = redis.RedisModule_Call.?(ctx, c"SET", c"v", &(argv[1]), argc - 1);
+    var reply = redis.RedisModule_Call.?(ctx, c"SET", c"!v", &(argv[1]), argc - 1);
     return redis.RedisModule_ReplyWithCallReply.?(ctx, reply);
 }
 
@@ -37,7 +37,7 @@ export fn RedisModule_OnLoad(ctx: *redis.RedisModuleCtx, argv: [*c]*redis.RedisM
         return redis.REDISMODULE_ERR;
     }
     
-    const err = redis.RedisModule_CreateCommand.?(ctx, c"setne", SETNE, c"write deny-oom", 1, 1, 1);
+    const err = redis.RedisModule_CreateCommand.?(ctx, c"setne", SETNE, c"write fast deny-oom", 1, 1, 1);
     if (err == redis.REDISMODULE_ERR) return redis.REDISMODULE_ERR;
     
     return redis.REDISMODULE_OK;
