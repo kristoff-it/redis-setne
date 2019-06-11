@@ -24,6 +24,12 @@ The command can also be used to create new keys or transform an existing key to 
 ### SETNE supports all of SET's options
 You can also use all the usual `SET` options like `EX`, `PX`, `NX`, `XX`. All arguments passed to `SETNE` get routed to `SET` if the key must have a real write happen to it (otherwise, nothing happens and none of the options has any effect).
 
+### Asymptotic Complexity (Big O)
+The command has the same overall asymptotic complexity as SET: O(1), but it does do extra work as it has to first compare input with the current value of the key, in order to know if it should perform any assignment or not.
+
+If you want to factor string length into your complexity analysis, the worst case is O(N) when N is the string length of the argument that you are passing in. In practice, this case only triggers when both the old and new value have the same length N (otherwise we will know immediately that the two strings are not equal) and when both old and new values are exactly the same.
+
+In general the command is very fast but still slower than plain old `SET`, so use it only if you have real need for this functionality.
 
 ## Obtaining the module
 ### Download precompiled binaries from GitHub
